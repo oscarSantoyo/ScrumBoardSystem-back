@@ -53,8 +53,8 @@ public class UserStoryControllerImpl implements UserStoryController{
 
   @PutMapping(value = "/userstories/{userStoryId}")
   @Override
-  public UserStoryDTO updateUserStory(@RequestBody UserStoryDTO UserStoryDTO, @PathVariable Long userStoryId) {
-    return userStoryService.updateUserStory(UserStoryDTO, userStoryId);
+  public UserStoryDTO updateUserStory(@RequestBody UserStoryDTO userStoryDTO, @PathVariable Long userStoryId) {
+    return userStoryService.updateUserStory(userStoryDTO, userStoryId);
   }
 
   @DeleteMapping(value = "/userstories/{userStoryId}")
