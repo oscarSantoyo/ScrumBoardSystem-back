@@ -74,6 +74,10 @@ public class Sprint {
         this.project = project;
     }
 
+    /**
+     * Transforms the Sprint Entity into a SprintDTO object.
+     * @return the SprintDTO corresponded to the Entity
+     */
     public SprintDTO toDTO() {
         return new SprintDTO.Builder()
                 .withId(this.id)
@@ -83,6 +87,10 @@ public class Sprint {
                 .build();
     }
 
+    /**
+     * Mocks the relationship betweeen Sprints and Project with the given <code>projectId</code>
+     * @param projectId the Project ID to mock the relationship
+     */
     public void setIsolatedProject(Long projectId) {
         Project project = new Project();
         project.setId(projectId);
