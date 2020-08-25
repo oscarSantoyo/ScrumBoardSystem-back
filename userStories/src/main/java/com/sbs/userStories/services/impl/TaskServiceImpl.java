@@ -24,7 +24,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO getById(Long userStoryTask, Long taskId) {
+    public TaskDTO getById(Long userStoryId, Long taskId) {
         return taskRepository.findById(taskId).get().toDTO();
     }
 
