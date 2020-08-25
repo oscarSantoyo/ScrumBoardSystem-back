@@ -99,6 +99,10 @@ public class UserStory {
     this.tasks = tasks;
   }
 
+  /**
+   * Transforms the User Story Entity to the UserStoryDTO Object
+   * @return the DTO User Story Object
+   */
   public UserStoryDTO toDTO() {
     return new UserStoryDTO.Builder()
         .withId(this.id)
@@ -113,7 +117,6 @@ public class UserStory {
             .withId(task.getId())
             .withDescription(task.getDescription())
             .withDuration(task.getDuration())
-//                .withUserStory(Optional.ofNullable(task.getUserStory()).orElse(new UserStory()).toDTO())
             .build()).collect(Collectors.toSet()))
         .build();
   }
