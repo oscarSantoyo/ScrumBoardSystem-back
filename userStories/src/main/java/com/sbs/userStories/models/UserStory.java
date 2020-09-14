@@ -16,7 +16,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +44,7 @@ public class UserStory {
   private Set<Label> labels;
 
   @OneToMany(mappedBy = "userStory", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  private Set<Task> tasks;
+  private List<Task> tasks;
 
   public UserStory() {
   }
@@ -53,11 +55,12 @@ public class UserStory {
     this.description = userStory.getDescription();
     this.weight = userStory.getWeight();
     this.tasks = Optional.ofNullable(userStory.getTasks())
-            .orElse(new HashSet<>())
+            .orElse(new ArrayList<>())
             .parallelStream()
             .map(Task::new)
             .map(task -> task.withUserStory(this))
-            .collect(Collectors.toSet());
+            .sorted(Comparator.comparingInt(Task::getOrder))
+            .collect(Collectors.toList());
   }
 
   public Long getId() {
@@ -100,30 +103,40 @@ public class UserStory {
     this.labels = labels;
   }
 
-  public Set<Task> getTasks() {
+  public List<Task> getTasks() {
     return tasks;
   }
 
-  public void setTasks(Set<Task> tasks) {
+  public void setTasks(List<Task> tasks) {
     this.tasks = tasks;
   }
 
+  /**
+   * Transforms the User Story Entity to the UserStoryDTO Object
+   *
+   * @return the DTO User Story Object
+   */
   public UserStoryDTO toDTO() {
     return new UserStoryDTO.Builder()
-        .withId(this.id)
-        .withTitle(this.title)
-        .withDescription(this.description)
-        .withWeight(this.weight)
-        .withLabels(this.labels.parallelStream().map(label -> new LabelDTO.Builder()
-            .withId(label.getId())
-            .withDescription(label.getDescription())
-            .build()).collect(Collectors.toSet()))
-        .withTasks(this.tasks.parallelStream().map(task -> new TaskDTO.Builder()
-            .withId(task.getId())
-            .withDescription(task.getDescription())
-            .withDuration(task.getDuration())
-//                .withUserStory(Optional.ofNullable(task.getUserStory()).orElse(new UserStory()).toDTO())
-            .build()).collect(Collectors.toSet()))
-        .build();
+            .withId(this.id)
+            .withTitle(this.title)
+            .withDescription(this.description)
+            .withWeight(this.weight)
+            .withLabels(this.labels.parallelStream().map(label -> new LabelDTO.Builder()
+                    .withId(label.getId())
+                    .withDescription(label.getDescription())
+                    .build()).collect(Collectors.toSet()))
+            .withTasks(this.tasks.parallelStream().map(task -> new TaskDTO.Builder()
+                    .withId(task.getId())
+                    .withDescription(task.getDescription())
+                    .withDuration(task.getDuration())
+                    .withDone(task.getDone())
+                    .withOrder(task.getOrder())
+                    .withCreatedTimeStamp(task.getCreatedTimeStamp())
+                    .withUpdatedTimeStamp(task.getUpdatedTimeStamp())
+                    .build())
+                    .sorted(Comparator.comparing(TaskDTO::getOrder))
+                    .collect(Collectors.toList()))
+            .build();
   }
 }

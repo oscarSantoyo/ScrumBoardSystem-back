@@ -3,91 +3,109 @@ package com.sbs.userStories;
 import com.sbs.contracts.dto.LabelDTO;
 import com.sbs.contracts.dto.TaskDTO;
 import com.sbs.contracts.dto.UserStoryDTO;
-import com.sbs.userStories.services.LabelService;
-import com.sbs.userStories.services.TaskService;
-import com.sbs.userStories.services.UserStoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
-public class UserStoryController {
+public interface UserStoryController {
 
-  @Autowired
-  private UserStoryService userStoryService;
+    /**
+     * Gets all User Stories
+     *
+     * @return the DTO USer Stories Objects
+     */
+    Iterable<UserStoryDTO> getAllUsersStories();
 
-  @Autowired
-  private TaskService taskService;
+    /**
+     * Gets all the Users Stories that match the <code>ids</code> criteria
+     *
+     * @param ids the list of IDS to be fetched
+     * @return the Users Stories DTO objects that match the criteria
+     */
+    Iterable<UserStoryDTO> getUserStoriesByIds(List<Long> ids);
 
-  @Autowired
-  private LabelService labelService;
+    /**
+     * Gets the User Story by its <code>userStoryId</code>
+     *
+     * @param userStoryId the requested User Story ID
+     * @return the DTO User Story Object
+     */
+    UserStoryDTO getUserStory(Long userStoryId);
 
-  @GetMapping(value = "/userstories", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Iterable<UserStoryDTO> getAllUsersStories() {
-    return userStoryService.getAllUserStories();
-  }
+    /**
+     * Creates the User Story
+     *
+     * @param UserStoryDTO the DTO Object with the data to be created
+     * @return the DTO User Story created
+     */
+    UserStoryDTO createUserStory(UserStoryDTO UserStoryDTO);
 
-  @GetMapping(value = "/userstories", produces = MediaType.APPLICATION_JSON_VALUE, params = {"ids"})
-  public Iterable<UserStoryDTO> getUserStoriesByIds(@RequestParam List<Long> ids) {
-    return userStoryService.getByIds(ids);
-  }
+    /**
+     * Updates the User Story with the <code>userStoryId</code> specified
+     *
+     * @param UserStoryDTO the DTO Object with the new data
+     * @param userStoryId  the requested User Story ID
+     * @return the DTO User Story updated
+     */
+    UserStoryDTO updateUserStory(UserStoryDTO UserStoryDTO, Long userStoryId);
 
-  @GetMapping(value = "/userstories/{userStoryId}")
-  public UserStoryDTO getUserStory(@PathVariable Long userStoryId) {
-    return userStoryService.getUserStoryById(userStoryId);
-  }
+    /**
+     * Deletes the User Story identified by its <code>userStoryId</code>
+     *
+     * @param userStoryId the requested User Story ID to be deleted
+     */
+    void deleteUserStory(Long userStoryId);
 
-  @PostMapping(value = "/userstories")
-  public UserStoryDTO createUserStory(@RequestBody UserStoryDTO UserStoryDTO) {
-    return userStoryService.createUserStory(UserStoryDTO);
-  }
+    /**
+     * Gets all the User Stories's Tasks within the <code>userStoryId</code>
+     *
+     * @param userStoryId the related User Story ID
+     * @return the TaskDTO Objects
+     */
+    Iterable<TaskDTO> getAllTaks(Long userStoryId);
 
-  @PutMapping(value = "/userstories/{userStoryId}")
-  public UserStoryDTO updateUserStory(@RequestBody UserStoryDTO UserStoryDTO, @PathVariable Long userStoryId) {
-    return userStoryService.updateUserStory(UserStoryDTO, userStoryId);
-  }
+    /**
+     * Gets the specified Task's with the <code>taskId</code> related to the
+     * User Story with the <code>userStoryId</code>
+     *
+     * @param userStoryId the related User Story ID
+     * @param taskId      the requested Task ID to be fetched
+     * @return the TaskDTO Object
+     */
+    TaskDTO getTask(Long userStoryId, Long taskId);
 
-  @DeleteMapping(value = "/userstories/{userStoryId}")
-  public void deleteUserStory(@PathVariable Long userStoryId) {
-    userStoryService.deleteUserStoById(userStoryId);
-  }
+    /**
+     * Creates a new User Story's Task related to the specified <code>userStoryId</code>
+     *
+     * @param userStoryId the related User Story ID
+     * @param TaskDTO     the DTO Object created
+     * @return the created DTO Task Object
+     */
+    TaskDTO createTask(Long userStoryId, TaskDTO TaskDTO);
 
-  @GetMapping(value = "/userstories/{userStoryId}/tasks")
-  public Iterable<TaskDTO> getAllTaks(@PathVariable Long userStoryId) {
-    return taskService.getAll(userStoryId);
-  }
+    /**
+     * Updates the User Story's Task with the <code>taskId</code> related to the
+     * <code>userStoryId</code>
+     *
+     * @param userStoryId the related User Story ID
+     * @param taskId      the requested Task ID to be updated
+     * @param TaskDTO     the DTO Task Object with the new data
+     * @return the updated DTO Task Object
+     */
+    TaskDTO updateTask(Long userStoryId, Long taskId, TaskDTO TaskDTO);
 
-  @GetMapping(value = "/userstories/{userStoryId}/tasks/{taskId}")
-  public TaskDTO getTask(@PathVariable Long userStoryId, @PathVariable Long taskId) {
-    return taskService.getById(userStoryId, taskId);
-  }
+    /**
+     * Deletes the User Story's Task with the <code>taskId</code> related to the
+     * <code>userStoryId</code>
+     *
+     * @param userStoryId the related User Story ID
+     * @param taskId      the requested Task ID to be deleted
+     */
+    void deleteTask(Long userStoryId, Long taskId);
 
-  @PostMapping(value = "/userstories/{userStoryId}/tasks")
-  public TaskDTO createTask(@PathVariable Long userStoryId, @RequestBody TaskDTO TaskDTO) {
-    return taskService.create(userStoryId, TaskDTO);
-  }
-
-  @PutMapping(value = "/userstories/{userStoryId}/tasks/{taskId}")
-  public TaskDTO updateTask(@PathVariable Long userStoryId, @PathVariable Long taskId, @RequestBody TaskDTO TaskDTO) {
-    return taskService.updateUserStoryTask(userStoryId, taskId, TaskDTO);
-  }
-
-  @DeleteMapping(value = "/userstories/{userStoryId}/tasks/{taskId}")
-  public void deleteTask(@PathVariable Long userStoryId, @PathVariable Long taskId) {
-    taskService.deleteById(userStoryId, taskId);
-  }
-
-  @GetMapping(value = "/labels")
-  public Iterable<LabelDTO> getAllLabels() {
-    return labelService.getAll();
-  }
+    /**
+     * Gets all the labels saved
+     *
+     * @return all the labelDTO objects saved
+     */
+    Iterable<LabelDTO> getAllLabels();
 }
